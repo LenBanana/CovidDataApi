@@ -46,51 +46,58 @@ namespace Corona_Data_API.DataManager
 
         public async static void UpdateData()
         {
-            string source = "https://covid.ourworldindata.org/data/owid-covid-data.csv";
-            IEnumerable<CovidCountry> countries = CovidCSVExtension.FromCSV<CovidCountry>(source, csvConfig);
-            if (countries != null)
+            try
             {
-                covidCountries = countries.ToList();
-                dataConfigs = covidCountries
-                    .GroupBy(p => p.iso_code)
-                    .Select(g => g.First())
-                    .Select(x => new DataConfig { iso_code = x.iso_code, location = x.location, continent = x.continent }).ToList();
+                string source = "https://covid.ourworldindata.org/data/owid-covid-data.csv";
+                IEnumerable<CovidCountry> countries = CovidCSVExtension.FromCSV<CovidCountry>(source, csvConfig);
+                if (countries != null)
+                {
+                    covidCountries = countries.ToList();
+                    dataConfigs = covidCountries
+                        .GroupBy(p => p.iso_code)
+                        .Select(g => g.First())
+                        .Select(x => new DataConfig { iso_code = x.iso_code, location = x.location, continent = x.continent }).ToList();
+                }
             }
+            catch { }
             await Task.Delay(TimeSpan.FromHours(1));
             UpdateData();
         }
 
         public async static void UpdateHopkinsAndWHO()
         {
-            var date = DateTime.Now;
-            string hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
-            string HopkinSource = "";
-            while (!(new Uri(hopkinSource + hopkinEnd).Reachable()))
+            try
             {
-                date = date.AddDays(-1);
-                hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
-                HopkinSource = hopkinSource + hopkinEnd;
-            }
-            DateTime maxDate = date.AddDays(-7);
-            List<HopkinsData> newData = new List<HopkinsData>();
-            while (new Uri(HopkinSource).Reachable() && date > maxDate)
-            {
-                IEnumerable<HopkinsData> hopkinData = CovidCSVExtension.FromCSV<HopkinsData>(HopkinSource, csvConfig);
-                if (hopkinData != null)
+                var date = DateTime.Now;
+                string hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
+                string HopkinSource = "";
+                while (!(new Uri(hopkinSource + hopkinEnd).Reachable()))
                 {
-                    newData.AddRange(hopkinData.ToList());
+                    date = date.AddDays(-1);
+                    hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
+                    HopkinSource = hopkinSource + hopkinEnd;
                 }
-                date = date.AddDays(-1);
-                hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
-                HopkinSource = hopkinSource + hopkinEnd;
+                DateTime maxDate = date.AddDays(-7);
+                List<HopkinsData> newData = new List<HopkinsData>();
+                while (new Uri(HopkinSource).Reachable() && date > maxDate)
+                {
+                    IEnumerable<HopkinsData> hopkinData = CovidCSVExtension.FromCSV<HopkinsData>(HopkinSource, csvConfig);
+                    if (hopkinData != null)
+                    {
+                        newData.AddRange(hopkinData.ToList());
+                    }
+                    date = date.AddDays(-1);
+                    hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
+                    HopkinSource = hopkinSource + hopkinEnd;
+                }
+                hopkinsData = newData;
+
+                IEnumerable<WHOcountrys> whodata = CovidCSVExtension.FromCSV<WHOcountrys>(whoSource, csvConfig);
+                if (whodata != null)
+                    whoData = whodata.ToList();
             }
-            hopkinsData = newData;
-
-            IEnumerable<WHOcountrys> whodata = CovidCSVExtension.FromCSV<WHOcountrys>(whoSource, csvConfig);
-            if (whodata != null)
-                whoData = whodata.ToList();
-
-            await Task.Delay(TimeSpan.FromDays(1));
+            catch { }
+            await Task.Delay(TimeSpan.FromHours(6));
             UpdateHopkinsAndWHO();
         }
     }
