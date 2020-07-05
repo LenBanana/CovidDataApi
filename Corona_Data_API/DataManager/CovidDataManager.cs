@@ -96,7 +96,12 @@ namespace Corona_Data_API.DataManager
                 if (whodata != null)
                     whoData = whodata.ToList();
             }
-            catch { }
+            catch (Exception ex) 
+            {
+                await Task.Delay(TimeSpan.FromMinutes(5));
+                UpdateHopkinsAndWHO();
+                return;
+            }
             await Task.Delay(TimeSpan.FromHours(6));
             UpdateHopkinsAndWHO();
         }

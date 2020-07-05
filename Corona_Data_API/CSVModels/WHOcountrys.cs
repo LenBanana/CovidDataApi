@@ -12,10 +12,10 @@ namespace Corona_Data_API.CSVModels
         public string Country_code { get; set; }
         public string Country { get; set; }
         public string WHO_region { get; set; }
-        public int New_cases { get; set; }
-        public int Cumulative_cases { get; set; }
-        public int New_deaths { get; set; }
-        public int Cumulative_deaths { get; set; }
+        public int? New_cases { get; set; }
+        public int? Cumulative_cases { get; set; }
+        public int? New_deaths { get; set; }
+        public int? Cumulative_deaths { get; set; }
     }
 
     public class WhoClassMap : ClassMap<WHOcountrys>

@@ -15,10 +15,10 @@ namespace Corona_Data_API.CSVModels
         public DateTime Last_Update { get; set; }
         public string Lat { get; set; }
         public string Long_ { get; set; }
-        public int Confirmed { get; set; }
-        public int Deaths { get; set; }
-        public int Recovered { get; set; }
-        public int Active { get; set; }
+        public int? Confirmed { get; set; }
+        public int? Deaths { get; set; }
+        public int? Recovered { get; set; }
+        public int? Active { get; set; }
         public string Combined_Key { get; set; }
         public string Incidence_Rate { get; set; }
         public string Case_Fatality_Ratio { get; set; }
