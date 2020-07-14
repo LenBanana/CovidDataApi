@@ -77,7 +77,7 @@ namespace Corona_Data_API.DataManager
                     hopkinEnd = date.ToString("MM-dd-yyyy") + ".csv";
                     HopkinSource = hopkinSource + hopkinEnd;
                 }
-                DateTime maxDate = date.AddDays(-7);
+                DateTime maxDate = date.AddDays(-31);
                 List<HopkinsData> newData = new List<HopkinsData>();
                 while (new Uri(HopkinSource).Reachable() && date > maxDate)
                 {
