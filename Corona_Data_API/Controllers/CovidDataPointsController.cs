@@ -40,8 +40,11 @@ namespace Corona_Data_API.Controllers
         {
             try
             {
-                return Ok(new DataConfig() { iso_code = iso_code + "|", location = location + "|" });
-            } catch (Exception ex)
+                iso_code += "|";
+                location += "|";
+                return Ok(new DataConfig() { iso_code = iso_code, location = location });
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
@@ -52,10 +55,39 @@ namespace Corona_Data_API.Controllers
         {
             try
             {
-                return Ok(new AddedSource() { source = url, value = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig) });
-            } catch
+                List<object> obj = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig);
+                var source = new AddedSource() { source = url, value = obj };
+                return Ok(source);
+            }
+            catch (Exception ex)
             {
-                return StatusCode(400, "Error attempting to build object from CSV");
+                return StatusCode(400, "Error attempting to build object from CSV " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SaveCSV(string url, string iso_code, string location)
+        {
+            try
+            {
+                List<object> obj = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig);
+                AddedExternalSource externalSource = new AddedExternalSource();
+                externalSource.iso_code = iso_code.ToUpper();
+                externalSource.location = location;
+                externalSource.url = url;
+                string path = System.IO.Directory.GetCurrentDirectory() + "\\sources.json";
+                if (System.IO.File.Exists(path))
+                {
+                    string json = System.IO.File.ReadAllText(path);
+                    CovidDataManager.externalSources.AddRange(new List<AddedExternalSource>().FromJson(json));
+                }
+                CovidDataManager.externalSources.Add(externalSource);
+                System.IO.File.WriteAllText(path, CovidDataManager.externalSources.ToJson());
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, "Error attempting to save config to file " + ex.Message);
             }
         }
 
@@ -155,7 +187,8 @@ namespace Corona_Data_API.Controllers
                 }).data;
                 data.info = new DataInfo("OWID_WRL");
                 return Ok(data);
-            } else
+            }
+            else
             {
                 return StatusCode(204);
             }

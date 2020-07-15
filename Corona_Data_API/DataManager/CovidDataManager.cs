@@ -14,6 +14,14 @@ namespace Corona_Data_API.DataManager
     {
         public CovidDataManager()
         {
+            string path = System.IO.Directory.GetCurrentDirectory() + "\\sources.json";
+            externalSources = new List<AddedExternalSource>();
+            if (System.IO.File.Exists(path))
+            {
+                string json = System.IO.File.ReadAllText(path);
+                externalSources.AddRange(new List<AddedExternalSource>().FromJson(json));
+            }
+
             CsvConfiguration config = new CsvConfiguration(new CultureInfo("en-US", false));
             config.HasHeaderRecord = true;
             config.IgnoreQuotes = false;
@@ -39,6 +47,7 @@ namespace Corona_Data_API.DataManager
         public static List<DataConfig> dataConfigs { get; set; }
         public static List<HopkinsData> hopkinsData { get; set; }
         public static List<WHOcountrys> whoData { get; set; }
+        public static List<AddedExternalSource> externalSources { get; set; }
 
         public static string hopkinSource = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/";
 

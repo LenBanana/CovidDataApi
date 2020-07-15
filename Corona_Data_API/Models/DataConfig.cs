@@ -37,6 +37,13 @@ namespace Corona_Data_API.Models
                         _iso_code = value.Remove(value.Length - 1).ToUpper();
                         if (alternativeSource.Contains(_iso_code))
                             GenerateData();
+
+                        int idx = CovidDataManager.externalSources.FindIndex(x => x.iso_code == _iso_code);
+                        if (idx != -1)
+                        {
+                            List<object> obj = CovidCSVExtension.FromCSV<object>(CovidDataManager.externalSources[idx].url, CovidDataManager.csvConfig);
+                            addedSources.Add(new AddedSource() { source = CovidDataManager.externalSources[idx].url + " - Data added by external person", value = obj });
+                        }
                     }
                     else
                     {
