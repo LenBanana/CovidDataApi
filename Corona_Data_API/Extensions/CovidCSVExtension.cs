@@ -21,11 +21,21 @@ namespace Corona_Data_API.Extensions
                 {
                     using (StreamReader reader = new StreamReader(stream))
                     {
-                        using (var csv = new CsvReader(reader, config))
+                        List<T> countries = new List<T>();
+                        if (url.EndsWith("csv"))
                         {
-                            List<T> countries = csv.GetRecords<T>().ToList();
-                            return countries;
+                            using (var csv = new CsvReader(reader, config))
+                            {
+                                countries = csv.GetRecords<T>().ToList();
+                                return countries;
+                            }
                         }
+                        else if (url.EndsWith("json"))
+                        {
+                            string json = reader.ReadToEnd();
+                            countries = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(json);
+                        }
+                        return countries;
                     }
                 }
             }

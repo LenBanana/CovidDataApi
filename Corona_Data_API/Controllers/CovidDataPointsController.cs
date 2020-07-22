@@ -8,6 +8,7 @@ using Corona_Data_API.Calculations;
 using Corona_Data_API.DataManager;
 using Corona_Data_API.Models;
 using Corona_Data_API.Extensions;
+using Newtonsoft.Json;
 
 namespace Corona_Data_API.Controllers
 {
