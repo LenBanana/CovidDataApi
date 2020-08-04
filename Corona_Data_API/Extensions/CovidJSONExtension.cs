@@ -11,9 +11,9 @@ using CsvHelper.Configuration;
 
 namespace Corona_Data_API.Extensions
 {
-    public static class CovidCSVExtension
+    public static class CovidJSONExtension
     {
-        public static List<T> FromCSV<T>(string url, CsvConfiguration config) where T : new()
+        public static List<T> FromJSON<T>(string url) where T : new()
         {
             using (WebClient client = new WebClient())
             {
@@ -22,11 +22,9 @@ namespace Corona_Data_API.Extensions
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         List<T> countries = new List<T>();
-                        using (var csv = new CsvReader(reader, config))
-                        {
-                            countries = csv.GetRecords<T>().ToList();
-                            return countries;
-                        }
+                        string json = reader.ReadToEnd();
+                        countries = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(json);
+                        return countries;
                     }
                 }
             }

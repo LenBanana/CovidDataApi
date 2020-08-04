@@ -57,12 +57,25 @@ namespace Corona_Data_API.Controllers
             try
             {
                 List<object> obj = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig);
+                if (obj == null || obj.Count == 0)
+                    throw new Exception();
                 var source = new AddedSource() { source = url, value = obj };
                 return Ok(source);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(400, "Error attempting to build object from CSV " + ex.Message);
+                try
+                {
+                    List<object> obj = CovidJSONExtension.FromJSON<object>(url);
+                    if (obj == null || obj.Count == 0)
+                        throw new Exception();
+                    var source = new AddedSource() { source = url, value = obj };
+                    return Ok(source);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(400, "Error attempting to build object from CSV " + ex.Message);
+                }
             }
         }
 
