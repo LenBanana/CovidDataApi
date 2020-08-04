@@ -56,7 +56,7 @@ namespace Corona_Data_API.Controllers
         {
             try
             {
-                List<object> obj = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig);
+                List<object> obj = CovidCSVExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
                 if (obj == null || obj.Count == 0)
                     throw new Exception();
                 var source = new AddedSource() { source = url, value = obj };
@@ -66,7 +66,7 @@ namespace Corona_Data_API.Controllers
             {
                 try
                 {
-                    List<object> obj = CovidJSONExtension.FromJSON<object>(url);
+                    List<Dictionary<string, object>> obj = CovidJSONExtension.FromJSONURL<Dictionary<string, object>>(url);
                     if (obj == null || obj.Count == 0)
                         throw new Exception();
                     var source = new AddedSource() { source = url, value = obj };
@@ -80,11 +80,43 @@ namespace Corona_Data_API.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> PostCSVFile([FromForm] IFormFile file)
+        {
+            using (var sr = new System.IO.StreamReader(file.OpenReadStream()))
+            {
+                var content = await sr.ReadToEndAsync();
+                try
+                {
+                    List<object> obj = CovidCSVExtension.FromCSV<object>(content, CovidDataManager.csvConfig);
+                    if (obj == null || obj.Count == 0)
+                        throw new Exception();
+                    var source = new AddedSource() { source = "User uploaded file", value = obj };
+                    return Ok(source);
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        List<Dictionary<string, object>> obj = CovidJSONExtension.FromJSON<Dictionary<string, object>>(content);
+                        if (obj == null || obj.Count == 0)
+                            throw new Exception();
+                        var source = new AddedSource() { source = "User uploaded file", value = obj };
+                        return Ok(source);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(400, "Error attempting to build object from CSV " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        [HttpPost]
         public IActionResult SaveCSV(string url, string iso_code, string location)
         {
             try
             {
-                List<object> obj = CovidCSVExtension.FromCSV<object>(url, CovidDataManager.csvConfig);
+                List<object> obj = CovidCSVExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
                 AddedExternalSource externalSource = new AddedExternalSource();
                 externalSource.iso_code = iso_code.ToUpper();
                 externalSource.location = location;

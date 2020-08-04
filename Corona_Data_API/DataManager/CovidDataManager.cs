@@ -28,6 +28,7 @@ namespace Corona_Data_API.DataManager
             config.IgnoreBlankLines = true;
             config.HeaderValidated = null;
             config.MissingFieldFound = null;
+            config.BadDataFound = null;
             config.RegisterClassMap<HopkinsDataClassMap>();
             config.RegisterClassMap<CovidGermanyStateClassMap>();
             config.RegisterClassMap<WhoClassMap>();
@@ -58,7 +59,7 @@ namespace Corona_Data_API.DataManager
             try
             {
                 string source = "https://covid.ourworldindata.org/data/owid-covid-data.csv";
-                IEnumerable<CovidCountry> countries = CovidCSVExtension.FromCSV<CovidCountry>(source, csvConfig);
+                IEnumerable<CovidCountry> countries = CovidCSVExtension.FromCSVURL<CovidCountry>(source, csvConfig);
                 if (countries != null)
                 {
                     covidCountries = countries.ToList();
@@ -90,7 +91,7 @@ namespace Corona_Data_API.DataManager
                 List<HopkinsData> newData = new List<HopkinsData>();
                 while (new Uri(HopkinSource).Reachable() && date > maxDate)
                 {
-                    IEnumerable<HopkinsData> hopkinData = CovidCSVExtension.FromCSV<HopkinsData>(HopkinSource, csvConfig);
+                    IEnumerable<HopkinsData> hopkinData = CovidCSVExtension.FromCSVURL<HopkinsData>(HopkinSource, csvConfig);
                     if (hopkinData != null)
                     {
                         newData.AddRange(hopkinData.ToList());
@@ -101,7 +102,7 @@ namespace Corona_Data_API.DataManager
                 }
                 hopkinsData = newData;
 
-                IEnumerable<WHOcountrys> whodata = CovidCSVExtension.FromCSV<WHOcountrys>(whoSource, csvConfig);
+                IEnumerable<WHOcountrys> whodata = CovidCSVExtension.FromCSVURL<WHOcountrys>(whoSource, csvConfig);
                 if (whodata != null)
                     whoData = whodata.ToList();
             }
