@@ -96,11 +96,11 @@ namespace Corona_Data_API.Models
             if (locationTranslationsWHO.Keys.Contains(loc))
                 whoLoc = locationTranslationsWHO[loc];
 
-            var dataWHO = CovidDataManager.whoData.Where(x => x.Country.ToLower() == whoLoc.ToLower());
-            if (dataWHO != null && dataWHO.Count() > 0)
-            {
-                addedSources.Add(new AddedSource() { source = CovidDataManager.whoSource + " - Data by the World Health Organization", value = dataWHO });
-            }
+            //var dataWHO = CovidDataManager.whoData.Where(x => x.Country.ToLower() == whoLoc.ToLower());
+            //if (dataWHO != null && dataWHO.Count() > 0)
+            //{
+            //    addedSources.Add(new AddedSource() { source = CovidDataManager.whoSource + " - Data by the World Health Organization", value = dataWHO });
+            //}
         }
 
         void GenerateData()
