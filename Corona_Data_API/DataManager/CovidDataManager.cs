@@ -59,7 +59,7 @@ namespace Corona_Data_API.DataManager
             try
             {
                 string source = "https://covid.ourworldindata.org/data/owid-covid-data.csv";
-                IEnumerable<CovidCountry> countries = CovidCSVExtension.FromCSVURL<CovidCountry>(source, csvConfig);
+                IEnumerable<CovidCountry> countries = CovidSerializerExtension.FromCSVURL<CovidCountry>(source, csvConfig);
                 if (countries != null)
                 {
                     covidCountries = countries.ToList();
@@ -91,7 +91,7 @@ namespace Corona_Data_API.DataManager
                 List<HopkinsData> newData = new List<HopkinsData>();
                 while (new Uri(HopkinSource).Reachable() && date > maxDate)
                 {
-                    IEnumerable<HopkinsData> hopkinData = CovidCSVExtension.FromCSVURL<HopkinsData>(HopkinSource, csvConfig);
+                    IEnumerable<HopkinsData> hopkinData = CovidSerializerExtension.FromCSVURL<HopkinsData>(HopkinSource, csvConfig);
                     if (hopkinData != null)
                     {
                         newData.AddRange(hopkinData.ToList());
@@ -102,7 +102,7 @@ namespace Corona_Data_API.DataManager
                 }
                 hopkinsData = newData;
 
-                IEnumerable<WHOcountrys> whodata = CovidCSVExtension.FromCSVURL<WHOcountrys>(whoSource, csvConfig);
+                IEnumerable<WHOcountrys> whodata = CovidSerializerExtension.FromCSVURL<WHOcountrys>(whoSource, csvConfig);
                 if (whodata != null)
                     whoData = whodata.ToList();
             }

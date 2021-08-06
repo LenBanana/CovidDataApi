@@ -56,25 +56,36 @@ namespace Corona_Data_API.Controllers
         {
             try
             {
-                List<object> obj = CovidCSVExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
+                List<Dictionary<string, object>> obj = CovidSerializerExtension.FromXMLURL<Dictionary<string, object>>(url);
                 if (obj == null || obj.Count == 0)
                     throw new Exception();
                 var source = new AddedSource() { source = url, value = obj };
                 return Ok(source);
             }
-            catch (Exception)
+            catch (Exception xmlEx)
             {
                 try
                 {
-                    List<Dictionary<string, object>> obj = CovidJSONExtension.FromJSONURL<Dictionary<string, object>>(url);
+                    List<object> obj = CovidSerializerExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
                     if (obj == null || obj.Count == 0)
                         throw new Exception();
                     var source = new AddedSource() { source = url, value = obj };
                     return Ok(source);
                 }
-                catch (Exception ex)
+                catch (Exception csvEx)
                 {
-                    return StatusCode(400, "Error attempting to build object from CSV " + ex.Message);
+                    try
+                    {
+                        List<Dictionary<string, object>> obj = CovidSerializerExtension.FromJSONURL<Dictionary<string, object>>(url);
+                        if (obj == null || obj.Count == 0)
+                            throw new Exception();
+                        var source = new AddedSource() { source = url, value = obj };
+                        return Ok(source);
+                    }
+                    catch (Exception JsonEx)
+                    {
+                        return StatusCode(400, "Error attempting to build object from URL");
+                    }
                 }
             }
         }
@@ -87,7 +98,7 @@ namespace Corona_Data_API.Controllers
                 var content = await sr.ReadToEndAsync();
                 try
                 {
-                    List<object> obj = CovidCSVExtension.FromCSV<object>(content, CovidDataManager.csvConfig);
+                    List<object> obj = CovidSerializerExtension.FromCSV<object>(content, CovidDataManager.csvConfig);
                     if (obj == null || obj.Count == 0)
                         throw new Exception();
                     var source = new AddedSource() { source = "User uploaded file", value = obj };
@@ -97,7 +108,7 @@ namespace Corona_Data_API.Controllers
                 {
                     try
                     {
-                        List<Dictionary<string, object>> obj = CovidJSONExtension.FromJSON<Dictionary<string, object>>(content);
+                        List<Dictionary<string, object>> obj = CovidSerializerExtension.FromJSON<Dictionary<string, object>>(content);
                         if (obj == null || obj.Count == 0)
                             throw new Exception();
                         var source = new AddedSource() { source = "User uploaded file", value = obj };
@@ -116,7 +127,7 @@ namespace Corona_Data_API.Controllers
         {
             try
             {
-                List<object> obj = CovidCSVExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
+                List<object> obj = CovidSerializerExtension.FromCSVURL<object>(url, CovidDataManager.csvConfig);
                 AddedExternalSource externalSource = new AddedExternalSource();
                 externalSource.iso_code = iso_code.ToUpper();
                 externalSource.location = location;

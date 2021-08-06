@@ -41,7 +41,7 @@ namespace Corona_Data_API.Models
                         int idx = CovidDataManager.externalSources.FindIndex(x => x.iso_code == _iso_code);
                         if (idx != -1)
                         {
-                            List<object> obj = CovidCSVExtension.FromCSVURL<object>(CovidDataManager.externalSources[idx].url, CovidDataManager.csvConfig);
+                            List<object> obj = CovidSerializerExtension.FromCSVURL<object>(CovidDataManager.externalSources[idx].url, CovidDataManager.csvConfig);
                             addedSources.Add(new AddedSource() { source = CovidDataManager.externalSources[idx].url + " - Data added by external person", value = obj });
                         }
                     }
@@ -108,11 +108,11 @@ namespace Corona_Data_API.Models
             if (iso_code == "DEU")
             {
                 string source = "https://raw.githubusercontent.com/jgehrcke/covid-19-germany-gae/master/data.csv";
-                List<CovidGermanyStates> obj = CovidCSVExtension.FromCSVURL<CovidGermanyStates>(source, CovidDataManager.csvConfig);
+                List<CovidGermanyStates> obj = CovidSerializerExtension.FromCSVURL<CovidGermanyStates>(source, CovidDataManager.csvConfig);
                 addedSources.Add(new AddedSource() { source = source + " - RKI & Spiegel Online Datensatz von JGehrecke @GitHub", value = obj });
 
                 string sourceRKI = "https://opendata.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0.csv";
-                List<RKILandkreis> objRKI = CovidCSVExtension.FromCSVURL<RKILandkreis>(sourceRKI, CovidDataManager.csvConfig);
+                List<RKILandkreis> objRKI = CovidSerializerExtension.FromCSVURL<RKILandkreis>(sourceRKI, CovidDataManager.csvConfig);
                 addedSources.Add(new AddedSource() { source = sourceRKI + " - Datensatz zu Landkreisen direkt vom Robert Koch Institut", value = objRKI });
 
                 //string sourceRKIGeneral = "https://opendata.arcgis.com/datasets/dd4580c810204019a7b8eb3e0b329dd6_0.csv";
@@ -122,13 +122,13 @@ namespace Corona_Data_API.Models
             if (iso_code == "USA")
             {
                 string source = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/live/us-states.csv";
-                List<CovidUSStates> obj = CovidCSVExtension.FromCSVURL<CovidUSStates>(source, CovidDataManager.csvConfig);
+                List<CovidUSStates> obj = CovidSerializerExtension.FromCSVURL<CovidUSStates>(source, CovidDataManager.csvConfig);
                 addedSources.Add(new AddedSource() { source = source + " - Dataset by New York Times", value = obj });
             }
             if (iso_code == "BRA")
             {
                 string source = "https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-states.csv";
-                List<CovidBrazilStates> obj = CovidCSVExtension.FromCSVURL<CovidBrazilStates>(source, CovidDataManager.csvConfig);
+                List<CovidBrazilStates> obj = CovidSerializerExtension.FromCSVURL<CovidBrazilStates>(source, CovidDataManager.csvConfig);
                 addedSources.Add(new AddedSource() { source = source + " - Casos e óbitos confirmados por dia, utilizando informação oficial pelo Ministério da Saúde", value = obj });
             }
         }

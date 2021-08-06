@@ -9,5 +9,6 @@ namespace Corona_Data_API.Models
     {
         public string caption { get; set; }
         public double value { get; set; }
+        public bool selected { get; set; } = true;
     }
 }
